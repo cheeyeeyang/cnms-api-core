@@ -15,4 +15,5 @@ class Order extends Model
         'UID',
         'CID',
     ];
+    protected $primaryKey = 'ORID';
 }

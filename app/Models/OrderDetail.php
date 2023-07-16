@@ -12,8 +12,10 @@ class OrderDetail extends Model
            'ODID',
            'ORID',
            'QTY',
+           'FREEQTY',
            'UID',
            'PRICE',
            'PDID',
     ];
+    protected $primaryKey = 'ODID';
 }
