@@ -14,23 +14,24 @@ class AlertApiController extends Controller
                 'ANAME' => 'required',
                 'DATEISUE' => 'required',
                 'DATEALERT' => 'required',
-                'PERCENTTAGE' => 'required',
+                'CONTENT' => 'required',
             ], [
                     'ANAME.required' => 'ໃສ່ຊື່ກ່ອນ!',
                     'DATEISUE.required' => 'ໃສ່ວັນທີກ່ອນ!',
                     'DATEALERT.required' => 'ໃສ່ວັນທີແຈ້ງເຕືອນກ່ອນ',
-                    'PERCENTTAGE.required' => 'ໃສ່ເປີເຊັນ%ກ່ອນ',
+                    'CONTENT.required' => 'ໃສ່ເປີເຊັນ%ກ່ອນ',
                 ]);
 
             if ($validator->fails()) {
                 $error = $validator->errors()->all()[0];
                 return response()->json(['status' => 'false', 'message' => $error, 'data' => []], 422);
             } else {
-                    $date = new Alert();
+                    $data = new Alert();
                     $data->ANAME  = $request->ANAME;
                     $data->DATEISUE =  $request->DATEISUE;
                     $data->DATEALERT =  $request->DATEALERT;
-                    $data->PERCENTTAGE =  $request->PERCENTTAGE;
+                    $data->CONTENT =  $request->CONTENT;
+                    $data->NOTE =  $request->NOTE;
                     $data->save();
                     return response()->json(['status' => 'true', 'message' => "ເພີ່ມຂໍ້ມູນສໍາເລັດແລ້ວ!", 'data' => $data], 200);
             }
@@ -49,7 +50,8 @@ class AlertApiController extends Controller
             $data->ANAME  = $request->ANAME;
             $data->DATEISUE =  $request->DATEISUE;
             $data->DATEALERT =  $request->DATEALERT;
-            $data->PERCENTTAGE =  $request->PERCENTTAGE;
+            $data->CONTENT =  $request->CONTENT;
+            $data->NOTE =  $request->NOTE;
             $data->update();
             return response()->json(['status' => 'true', 'message' => "ແກ້ໄຂຂໍ້ມູນສໍາເລັດແລ້ວ!", 'data' => $data], 200);
         }catch(\Exception $ex){

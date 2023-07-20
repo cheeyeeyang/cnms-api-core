@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PreOrder\GetPreorderByCustomerResource;
+use App\Http\Resources\PreOrder\GetPreorderByEmployeeResource;
 use App\Http\Resources\Preorder\GetPreorderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -62,6 +64,14 @@ class OrderApiController extends Controller
     }
     public function get_preorder_detail($id)
     {
-        return response()->json(['data' => OrderDetail::select('order_details.*','p.PDNAME AS PDNAME')->join('products as p','p.PDID', '=', 'order_details.PDID')->where('order_details.UID', auth()->user()->UID)->where('order_details.ORID', $id)->get()], 200);
+        return response()->json(['data' => OrderDetail::select('order_details.*', 'p.PDNAME AS PDNAME')->join('products as p', 'p.PDID', '=', 'order_details.PDID')->where('order_details.UID', auth()->user()->UID)->where('order_details.ORID', $id)->get()], 200);
+    }
+    public function get_preorder_by_employee()
+    {
+        return response()->json(['data' => GetPreorderByEmployeeResource::collection(Order::select('UID')->groupBy('UID')->get())], 200);
+    }
+    public function get_preorder_by_customer($id)
+    {
+        return response()->json(['data' => GetPreorderByCustomerResource::collection(Order::where('UID', $id)->get())], 200);
     }
 }
