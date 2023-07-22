@@ -3,8 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use View;
 use DB;
+use Illuminate\Support\Facades\View;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->app->bind('path.public', function(){
+            return base_path().'/../ROOT';
+        });
         View::share(([]));
     }
 }
