@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Assign;
-use DB;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\Employee\GetEmployeeResource;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 class EmployeeApiController extends Controller
 {
     public function add(Request $request){  

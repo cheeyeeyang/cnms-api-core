@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Alert;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 class AlertApiController extends Controller
 {
@@ -12,12 +13,10 @@ class AlertApiController extends Controller
             try {
                 $validator = Validator::make($request->all(), [
                 'ANAME' => 'required',
-                'DATEISUE' => 'required',
                 'DATEALERT' => 'required',
                 'CONTENT' => 'required',
             ], [
                     'ANAME.required' => 'ໃສ່ຊື່ກ່ອນ!',
-                    'DATEISUE.required' => 'ໃສ່ວັນທີກ່ອນ!',
                     'DATEALERT.required' => 'ໃສ່ວັນທີແຈ້ງເຕືອນກ່ອນ',
                     'CONTENT.required' => 'ໃສ່ເປີເຊັນ%ກ່ອນ',
                 ]);
@@ -28,7 +27,7 @@ class AlertApiController extends Controller
             } else {
                     $data = new Alert();
                     $data->ANAME  = $request->ANAME;
-                    $data->DATEISUE =  $request->DATEISUE;
+                    $data->DATEISUE =  Carbon::today();
                     $data->DATEALERT =  $request->DATEALERT;
                     $data->CONTENT =  $request->CONTENT;
                     $data->NOTE =  $request->NOTE;
@@ -48,7 +47,6 @@ class AlertApiController extends Controller
         try{
             $data = Alert::where('AID', $id)->first();
             $data->ANAME  = $request->ANAME;
-            $data->DATEISUE =  $request->DATEISUE;
             $data->DATEALERT =  $request->DATEALERT;
             $data->CONTENT =  $request->CONTENT;
             $data->NOTE =  $request->NOTE;

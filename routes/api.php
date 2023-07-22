@@ -67,10 +67,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/pre_order', [App\Http\Controllers\API\OrderApiController::class, 'preorder']);
     Route::get('/get_preorder', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder']);
     Route::get('/get_preorder_detail/{id}', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_detail']);
+    Route::get('/get_preorder_detail_by_customer/{id}', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_detail_by_customer']);
     Route::get('/get_preorder_by_employee', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_by_employee']);
     Route::get('/get_preorder_by_customer/{id}', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_by_customer']);
+    Route::get('/delete_preorder/{id}', [App\Http\Controllers\API\OrderApiController::class, 'delete_preorder']);
     // alert
     Route::post('/add_alert', [App\Http\Controllers\API\AlertApiController::class, 'add']);
-    Route::post('/get_alert', [App\Http\Controllers\API\AlertApiController::class, 'get']);
+    Route::get('/get_alert', [App\Http\Controllers\API\AlertApiController::class, 'get']);
 });
 //alert
