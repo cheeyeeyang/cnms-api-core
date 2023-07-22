@@ -1,4 +1,4 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(.*)$ ROOT/$1 [L]
+    RewriteRule ^(.*)$ ROOT/public $1 [L]
 </IfModule>
