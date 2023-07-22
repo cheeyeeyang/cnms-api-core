@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->bind('path.public', function(){
+        $this->app->bind('.htaccess', function(){
             return base_path().'/../ROOT';
         });
         View::share(([]));
