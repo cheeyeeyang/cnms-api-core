@@ -58,6 +58,48 @@ class OrderApiController extends Controller
             ], 500);
         }
     }
+    public function edit_preorder_detail(Request $request)
+    {
+        try {
+            $amount = 0;
+            $items = $request->input('items');
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $amount += $item['total'];
+                }
+            } else {
+                return response()->json(["message" => "ບໍ່ມີລາຍການສັ່ງຈອງ",], 401);
+            }
+            DB::beginTransaction();
+            $data =  Order::find($request->ORID);
+            $data->AMOUNT = $amount;
+            $data->update();
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $order_detail = OrderDetail::find($item->id);
+                    if ($order_detail) {
+                        $order_detail->UID = auth()->user()->UID;
+                        $order_detail->PDID  = $item['id'];
+                        $order_detail->QTY  = $item['qty'];
+                        $order_detail->FREEQTY  = $item['freeqty'];
+                        $order_detail->PRICE  = $item['price'];
+                        $order_detail->save();
+                    }
+                }
+            } else {
+                return response()->json(["message" => "ບໍ່ມີລາຍການສັ່ງຈອງ",], 401);
+            }
+            DB::commit();
+            return response()->json([
+                'message' => 'ສັ່ງຈອງສໍາເລັດແລ້ວ'
+            ], 200);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $ex->getMessage()
+            ], 500);
+        }
+    }
     public function get_preorder()
     {
         return response()->json(['data' => GetPreorderResource::collection(Order::where('UID', auth()->user()->UID)->orderBy('ORID', 'desc')->get())], 200);

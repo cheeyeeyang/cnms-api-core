@@ -15,7 +15,8 @@ class Alert extends Model
         'DATEISUE',
         'DATEALERT',
         'CONTENT',
-        'NOTE'
+        'NOTE',
+        'DEL',
      ];
      protected $primaryKey = 'AID';
 }

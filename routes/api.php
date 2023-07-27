@@ -74,6 +74,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/delete_preorder/{id}', [App\Http\Controllers\API\OrderApiController::class, 'delete_preorder']);
     // alert
     Route::post('/add_alert', [App\Http\Controllers\API\AlertApiController::class, 'add']);
+    Route::post('/update_alert', [App\Http\Controllers\API\AlertApiController::class, 'update']);
     Route::get('/get_alert', [App\Http\Controllers\API\AlertApiController::class, 'get']);
+    Route::post('/delete_alert', [App\Http\Controllers\API\AlertApiController::class, 'delete_alert']);
+    Route::post('/confirm_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'confirm_alert_employee']);
+    Route::get('/count_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'count_alert_employee']);
 });
 //alert
