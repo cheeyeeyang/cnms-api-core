@@ -21,5 +21,5 @@ if ($uri !== '/' && file_exists(__DIR__.'/ROOT/public'.$uri)) {
 // if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
 //     return false;
 // }
-require_once __DIR__.'/index.php';
+require_once __DIR__.'/ROOT/public/index.php';
 // require_once __DIR__.'/public/index.php';
