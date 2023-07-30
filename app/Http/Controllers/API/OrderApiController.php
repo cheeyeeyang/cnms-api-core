@@ -68,7 +68,8 @@ class OrderApiController extends Controller
                     $amount += $item['total'];
                 }
             } else {
-                return response()->json(["message" => "ບໍ່ມີລາຍການສັ່ງຈອງ",], 401);
+                return response()->json(["message" => "ບໍ່ມີລາຍການສັ່ງຈອງ",], 405);
+                return;
             }
             DB::beginTransaction();
             $data =  Order::find($request->ORID);
@@ -133,24 +134,6 @@ class OrderApiController extends Controller
             return response()->json(['message' => 'ລຶບຂໍ້ມູນຈອງສໍາເລັດແລ້ວ'], 200);
         } catch (\Exception $ex) {
             DB::rollBack();
-            return response()->json([
-                'message' => $ex->getMessage()
-            ], 500);
-        }
-    }
-    public function edit_order_detail(Request $request)
-    {
-        try {
-            $data =  OrderDetail::where('ODID', $request->id)->first();
-            if ($data) {
-                $data->QTY = $request->QTY;
-                $data->FREEQTY = $request->FREEQTY;
-                $data->update();
-                return response()->json(['message' => 'ລຶບຂໍ້ມູນຈອງສໍາເລັດແລ້ວ'], 200);
-            } else {
-                return response()->json(['message' => 'ຂໍ້ມູນນີ້ບໍ່ມີໃນລະບົບ'], 405);
-            }
-        } catch (\Exception $ex) {
             return response()->json([
                 'message' => $ex->getMessage()
             ], 500);
