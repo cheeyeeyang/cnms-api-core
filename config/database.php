@@ -53,7 +53,7 @@ return [
             // 'username' => env('DB_USERNAME', 'forge'),
             // 'password' => env('DB_PASSWORD', ''),
             // hosting
-            'url' => env('DATABASE_URL'),
+            'url' => env('http://env-3419718.cslox-th.ruk-com.la/'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => 'cnms_26032023_db',
