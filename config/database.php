@@ -44,8 +44,8 @@ return [
         ],
 
         'mysql' => [
-            'driver' => 'mysql',
             // local
+            // 'driver' => 'mysql',
             // 'url' => env('DATABASE_URL'),
             // 'host' => env('DB_HOST', '127.0.0.1'),
             // 'port' => env('DB_PORT', '3306'),
@@ -53,7 +53,8 @@ return [
             // 'username' => env('DB_USERNAME', 'forge'),
             // 'password' => env('DB_PASSWORD', ''),
             // hosting
-            // 'url' => env('DATABASE_URL'),
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
             'host' => 'node49149-env-3419718.cslox-th.ruk-com.la',
             'port' => env('DB_PORT', '3306'),
             'database' => 'cnms_26032023_db',
@@ -131,7 +132,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
