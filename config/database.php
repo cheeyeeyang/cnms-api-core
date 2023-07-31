@@ -54,7 +54,7 @@ return [
             // 'password' => env('DB_PASSWORD', ''),
             // hosting
             'url' => 'https://node49149-env-3419718.cslox-th.ruk-com.la/',
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => 'localhost',
             'port' => env('DB_PORT', '3306'),
             'database' => 'OZYdzx15146',
             'username' => 'root',
