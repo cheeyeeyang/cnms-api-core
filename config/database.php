@@ -45,7 +45,15 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => 'https://node49149-env-3419718.cslox-th.ruk-com.la/',
+            // local
+            // 'url' => env('DATABASE_URL'),
+            // 'host' => env('DB_HOST', '127.0.0.1'),
+            // 'port' => env('DB_PORT', '3306'),
+            // 'database' => env('DB_DATABASE', 'forge'),
+            // 'username' => env('DB_USERNAME', 'forge'),
+            // 'password' => env('DB_PASSWORD', ''),
+            // hosting
+            // 'url' => 'https://node49149-env-3419718.cslox-th.ruk-com.la/',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => 'OZYdzx15146',
