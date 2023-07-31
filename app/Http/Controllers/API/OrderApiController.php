@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PreOrder\GetPreorderByCustomerResource;
 use App\Http\Resources\PreOrder\GetPreorderByEmployeeResource;
 use App\Http\Resources\Preorder\GetPreorderResource;
+use App\Models\Employee;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,7 +114,18 @@ class OrderApiController extends Controller
     }
     public function get_preorder_by_employee()
     {
-        return response()->json(['data' => GetPreorderByEmployeeResource::collection(Order::select('UID')->groupBy('UID')->get())], 200);
+        // return response()->json(['data' => GetPreorderByEmployeeResource::collection(Order::select('UID')->groupBy('UID')->get())], 200);
+        $selectdata  = Order::select('UID')->groupBy('UID')->get();
+        $data = [];
+        foreach ($selectdata  as $item) {
+            $data[] = [
+                'UID' => $item->UID,
+                'employee' => Employee::whereIn('EMPID', User::where('UID', $item->UID)->pluck('EMPID'))->first(),
+                'qty' => strval(Order::where('UID', $item->UID)->count()),
+                'freeqty' => OrderDetail::where('UID', $item->UID)->sum('FREEQTY')
+            ];
+        }
+        return response()->json(['data' => $data], 200);
     }
     public function get_preorder_by_customer($id)
     {
