@@ -77,14 +77,12 @@ class OrderApiController extends Controller
             $data->update();
             if (is_array($items)) {
                 foreach ($items as $item) {
-                    $order_detail = OrderDetail::find($item->id);
-                    if ($order_detail) {
-                        $order_detail->UID = auth()->user()->UID;
-                        $order_detail->PDID  = $item['id'];
+                    $order_detail = OrderDetail::where('ODID', $item['orderdetailId'])->first();
+                    if (!empty($order_detail)) {
                         $order_detail->QTY  = $item['qty'];
                         $order_detail->FREEQTY  = $item['freeqty'];
                         $order_detail->PRICE  = $item['price'];
-                        $order_detail->save();
+                        $order_detail->update();
                     }
                 }
             } else {
@@ -92,10 +90,13 @@ class OrderApiController extends Controller
             }
             DB::commit();
             return response()->json([
-                'message' => 'ສັ່ງຈອງສໍາເລັດແລ້ວ'
+                'message' => 'ແກ້ໄຂສໍາເລັດແລ້ວ'
             ], 200);
         } catch (\Exception $ex) {
             DB::rollBack();
+            // return response()->json([
+            //     'message' => 'ມີບາງຢ່າງຜິດພາດ'
+            // ], 500);
             return response()->json([
                 'message' => $ex->getMessage()
             ], 500);

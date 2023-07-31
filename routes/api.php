@@ -19,9 +19,12 @@ Route::get('/test', [App\Http\Controllers\API\Auth\AuthApiController::class, 'ge
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/forget_password', [App\Http\Controllers\API\Auth\AuthApiController::class, 'forget_password']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [App\Http\Controllers\API\Auth\AuthApiController::class, 'logout']);
     Route::get('/get_profile', [App\Http\Controllers\API\Auth\AuthApiController::class, 'getProfile']);
+    Route::post('/reset_forget_password', [App\Http\Controllers\API\Auth\AuthApiController::class, 'reset_forget_password']);
+
     Route::get('/alert', [App\Http\Controllers\API\AlertApiController::class, 'get']);
     Route::post('/alert', [App\Http\Controllers\API\AlertApiController::class, 'add']);
     Route::put('/alert/{id}', [App\Http\Controllers\API\AlertApiController::class, 'update']);
@@ -79,6 +82,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/delete_alert', [App\Http\Controllers\API\AlertApiController::class, 'delete_alert']);
     Route::post('/confirm_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'confirm_alert_employee']);
     Route::get('/count_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'count_alert_employee']);
-    Route::post('/edit_preorder_detail', [App\Http\Controllers\API\AlertApiController::class, 'edit_preorder_detail']);
+    Route::post('/edit_preorder_detail', [App\Http\Controllers\API\OrderApiController::class, 'edit_preorder_detail']);
 });
 //alert
