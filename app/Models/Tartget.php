@@ -13,7 +13,7 @@ class Tartget extends Model
         'UID',
         'TARGET',
         'AMOUNT',
-        'PERCENTTAGE',
+        'PERCENTAGE',
      ];
      protected $primaryKey = 'TGID';
      public function user(){

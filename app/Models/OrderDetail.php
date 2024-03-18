@@ -16,6 +16,8 @@ class OrderDetail extends Model
            'UID',
            'PRICE',
            'PDID',
+           'created_at',
+           'updated_at'
     ];
     protected $primaryKey = 'ODID';
 }

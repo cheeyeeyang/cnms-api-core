@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PreOrder\GetPreorderByCustomerResource;
-use App\Http\Resources\PreOrder\GetPreorderByEmployeeResource;
 use App\Http\Resources\Preorder\GetPreorderResource;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -145,7 +144,8 @@ class OrderApiController extends Controller
     }
     public function get_preorder_detail_by_customer($id)
     {
-        return response()->json(['data' => OrderDetail::select('order_details.*', 'p.PDNAME AS PDNAME')->join('products as p', 'p.PDID', '=', 'order_details.PDID')->where('order_details.ORID', $id)->get()], 200);
+        return response()->json(['data' => OrderDetail::select('order_details.*', 'p.PDNAME AS PDNAME')
+            ->join('products as p', 'p.PDID', '=', 'order_details.PDID')->where('order_details.ORID', $id)->get()], 200);
     }
     public function delete_preorder($id)
     {
@@ -164,5 +164,103 @@ class OrderApiController extends Controller
                 'message' => $ex->getMessage()
             ], 500);
         }
+    }
+    public function history_preorder_employee()
+    {   
+        $data  = Customer::whereIn('CID', Order::pluck('CID'))->get();
+        $order = [];
+        foreach ($data as $item) {
+            $customer = Customer::where('CID', $item->CID)->first();
+            $order[] = [
+                'id' => $item->CID,
+                'customer' => $customer->CNAME ?? '',
+                'zone' => $customer->zone->ZNAME ?? '',
+                'tel' => $customer->TEL ?? '',
+                'tpi' => OrderDetail::select('order_details.order_details')
+                    ->join('orders', 'orders.ORID', '=', 'order_details.ORID')
+                    ->where('orders.UID', auth()->user()->UID)
+                    ->where('orders.CID', $item->CID)->sum('order_details.QTY'),
+                'tay' => Order::where('CID', $item->CID)->where('UID', auth()->user()->UID)->whereYear('created_at', Carbon::now()->year)->sum('AMOUNT'),
+                'tam' => Order::where('CID', $item->CID)->where('UID', auth()->user()->UID)->whereMonth('created_at', Carbon::now()->month)->sum('AMOUNT')
+            ];
+        }
+        if (!empty($order)) {
+            $order = collect($order)->sortByDesc('tay')->values()->all();
+        }
+        return response()->json(['data' => $order], 200);
+    }
+    public function history_preorder_employee_by_month(Request $request)
+    {
+        $data  = Product::whereIn('PDID', OrderDetail::pluck('PDID'))->get();
+        $order = [];
+        foreach ($data as $item) {
+            $product = Product::where('PDID', $item->PDID)->first();
+            $order[] = [
+                'id' => $item->PDID,
+                'product' => $product->PDNAME ?? '',
+                'unit' => $product->unit->name ?? '',
+                'jan' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 1)->sum('order_details.QTY'),
+                'feb' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 2)->sum('order_details.QTY'),
+                'mar' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 3)->sum('order_details.QTY'),
+                'apr' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 4)->sum('order_details.QTY'),
+                'may' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 5)->sum('order_details.QTY'),
+                'jun' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 6)->sum('order_details.QTY'),
+                'junly' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 7)->sum('order_details.QTY'),
+                'aug' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 8)->sum('order_details.QTY'),
+                'sep' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 9)->sum('order_details.QTY'),
+                'oct' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 10)->sum('order_details.QTY'),
+                'nov' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 11)->sum('order_details.QTY'),
+                'dec' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.UID', auth()->user()->UID)->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 12)->sum('order_details.QTY'),
+            ];
+        }
+        return response()->json(['data' => $order], 200);
+    }
+    public function history_preorder_admin()
+    {
+        $data  = Customer::whereIn('CID', Order::pluck('CID'))->get();
+        $order = [];
+        foreach ($data as $item) {
+            $customer = Customer::where('CID', $item->CID)->first();
+            $order[] = [
+                'id' => $item->CID,
+                'customer' => $customer->CNAME ?? '',
+                'zone' => $customer->zone->ZNAME ?? '',
+                'tel' => $customer->TEL ?? '',
+                'item' => OrderDetail::select('order_details.order_details')
+                    ->join('orders', 'orders.ORID', '=', 'order_details.ORID')
+                    ->where('orders.CID', $item->CID)->sum('order_details.QTY'),
+                'amount' => Order::where('CID', $item->CID)->whereYear('created_at', Carbon::now()->year)->sum('AMOUNT'),
+            ];
+        }
+        if (!empty($order)) {
+            $order = collect($order)->sortByDesc('amount')->values()->all();
+        }
+        return response()->json(['data' => $order], 200);
+    }
+    public function history_preorder_admin_by_month(Request $request)
+    {
+        $data  = Product::whereIn('PDID', OrderDetail::pluck('PDID'))->get();
+        $order = [];
+        foreach ($data as $item) {
+            $product = Product::where('PDID', $item->PDID)->first();
+            $order[] = [
+                'id' => $item->PDID,
+                'product' => $product->PDNAME ?? '',
+                'unit' => $product->unit->name ?? '',
+                'jan' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 1)->sum('order_details.QTY'),
+                'feb' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 2)->sum('order_details.QTY'),
+                'mar' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 3)->sum('order_details.QTY'),
+                'apr' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 4)->sum('order_details.QTY'),
+                'may' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 5)->sum('order_details.QTY'),
+                'jun' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 6)->sum('order_details.QTY'),
+                'junly' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 7)->sum('order_details.QTY'),
+                'aug' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 8)->sum('order_details.QTY'),
+                'sep' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 9)->sum('order_details.QTY'),
+                'oct' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 10)->sum('order_details.QTY'),
+                'nov' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 11)->sum('order_details.QTY'),
+                'dec' => OrderDetail::select('order_details.QTY')->join('orders', 'orders.ORID', '=', 'order_details.ORID')->where('orders.CID', $request->CID)->where('order_details.PDID', $item->PDID)->whereMonth('order_details.created_at', 12)->sum('order_details.QTY'),
+            ];
+        }
+        return response()->json(['data' => $order], 200);
     }
 }

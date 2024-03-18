@@ -14,14 +14,16 @@ class ProductApiController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'PDNAME' => 'required|unique:products',
-                'UNIT' => 'required',
+                'UNIT_ID' => 'required',
+                'CATE_ID' => 'required',
                 'BUY_PRICE' => 'required',
                 'SALE_PRICE' => 'required',
                 'SUPPLIER' => 'required'
             ], [
                 'PDNAME.required' => 'ໃສ່ຊື່ສິນຄ້າກ່ອນ!',
                 'PDNAME.unique' => 'ຊື່ສິນຄ້ານິ້ມີໃນລະບົບແລ້ວ!',
-                'UNIT.required' => 'ໃສ່ຊື່ຫົວໜ່ວຍກ່ອນ!',
+                'UNIT_ID.required' => 'ເລືອກຫົວໜ່ວຍກ່ອນ!',
+                'CATE_ID.required' => 'ເລືອກປະເພດສິນຄ້າກ່ອນ!',
                 'BUY_PRICE.required' => 'ໃສ່ລາຄາຊື້ກ່ອນ!',
                 'SALE_PRICE.required' => 'ໃສ່ລາຄາຂາຍກ່ອນ!',
                 'SUPPLIER.required' => 'ໃສ່ຜູ້ສະໜ້ອງກ່ອນ!',
@@ -38,7 +40,8 @@ class ProductApiController extends Controller
                 $data = new Product();
                 $data->PDNAME  = $request->PDNAME;
                 $data->CHEMISTRY_NAME  = $request->CHEMISTRY_NAME;
-                $data->UNIT  = $request->UNIT;
+                $data->UNIT_ID  = $request->UNIT_ID;
+                $data->CATE_ID  = $request->CATE_ID;
                 $data->BUY_PRICE  = $request->BUY_PRICE;
                 $data->SALE_PRICE  = $request->SALE_PRICE;
                 $data->SUPPLIER  = $request->SUPPLIER;
@@ -53,7 +56,7 @@ class ProductApiController extends Controller
     public function get()
     {
         return response([
-            'data' => Product::get()
+            'data' => ProductResource::collection(Product::orderBy('created_at', 'desc')->get())
         ], 200);
     }
     public function update(Request $request)
@@ -66,8 +69,11 @@ class ProductApiController extends Controller
             if ($request->CHEMISTRY_NAME) {
                 $data->CHEMISTRY_NAME  = $request->CHEMISTRY_NAME;
             }
-            if ($request->UNIT) {
-                $data->UNIT  = $request->UNIT;
+            if ($request->UNIT_ID) {
+                $data->UNIT_ID  = $request->UNIT_ID;
+            }
+            if ($request->CATE_ID) {
+                $data->CATE_ID  = $request->CATE_ID;
             }
             if ($request->BUY_PRICE) {
                 $data->BUY_PRICE  = $request->BUY_PRICE;

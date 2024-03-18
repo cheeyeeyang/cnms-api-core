@@ -16,7 +16,11 @@ class Plan extends Model
          'ACTUAL',
          'PERCENTAGE',
          'LAT',
-         'LNG'
+         'LNG',
+         'STATUS'
     ];
     protected $primaryKey = 'PID';
+    public function customer(){
+        return $this->belongsTo('App\Models\Customer','CID', 'CID');
+    }
 }

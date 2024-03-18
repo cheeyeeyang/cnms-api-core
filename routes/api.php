@@ -75,6 +75,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get_preorder_by_employee', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_by_employee']);
     Route::get('/get_preorder_by_customer/{id}', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_by_customer']);
     Route::get('/delete_preorder/{id}', [App\Http\Controllers\API\OrderApiController::class, 'delete_preorder']);
+    //unit
+    Route::get('/unit', [App\Http\Controllers\API\UnitApiController::class, 'get']);
+    Route::post('/unit', [App\Http\Controllers\API\UnitApiController::class, 'add']);
+    Route::post('/update/unit', [App\Http\Controllers\API\UnitApiController::class, 'update']);
+    Route::post('/delete/unit', [App\Http\Controllers\API\UnitApiController::class, 'delete']);
+    //category
+    Route::get('/category', [App\Http\Controllers\API\CategoryController::class, 'get']);
+    Route::post('/category', [App\Http\Controllers\API\CategoryController::class, 'add']);
+    Route::post('/update/category', [App\Http\Controllers\API\CategoryController::class, 'update']);
+    Route::post('/delete/category', [App\Http\Controllers\API\CategoryController::class, 'delete']);
     // alert
     Route::post('/add_alert', [App\Http\Controllers\API\AlertApiController::class, 'add']);
     Route::post('/update_alert', [App\Http\Controllers\API\AlertApiController::class, 'update']);
@@ -83,5 +93,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/confirm_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'confirm_alert_employee']);
     Route::get('/count_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'count_alert_employee']);
     Route::post('/edit_preorder_detail', [App\Http\Controllers\API\OrderApiController::class, 'edit_preorder_detail']);
+    Route::get('/get_history_plan_by_employee', [App\Http\Controllers\API\PlanApiController::class, 'get_history_plan_by_employee']);
+    Route::post('/get_history_plan_by_employee_by_date', [App\Http\Controllers\API\PlanApiController::class, 'get_history_plan_by_employee_by_date']);
+    Route::get('/history_preorder_employee', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_employee']);
+    Route::post('/history_preorder_employee_by_month', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_employee_by_month']);
+    Route::get('/history_preorder_admin', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_admin']);
+    Route::post('/history_preorder_admin_by_month', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_admin_by_month']);
+    //target
+    Route::post('/add_target', [App\Http\Controllers\API\TargetApiController::class, 'add']);
+    Route::get('/get_target', [App\Http\Controllers\API\TargetApiController::class, 'get']);
+    Route::get('/get_cal_target', [App\Http\Controllers\API\TargetApiController::class, 'getTarget']);
 });
 //alert

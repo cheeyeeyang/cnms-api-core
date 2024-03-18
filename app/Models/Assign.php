@@ -15,8 +15,8 @@ class Assign extends Model
         'EMPID',
      ];
      protected $primaryKey = 'AID';
-     public function user(){
-         return $this->belongsTo('App\Models\User','UID', 'UID');
+     public function zone(){
+         return $this->belongsTo('App\Models\Zone','ZID', 'ZID');
      }
      public function employee(){
         return $this->belongsTo('App\Models\Employee','EMPID', 'EMPID');

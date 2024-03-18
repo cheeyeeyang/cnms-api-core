@@ -90,6 +90,7 @@ class AuthApiController extends Controller
             return response([
                 'data' => auth()->user(),
                 'token' => auth()->user()->createToken('secret')->plainTextToken,
+                'role' => auth()->user()->TYPE,
             ], 200);
         } else {
             return response([

@@ -60,6 +60,7 @@ return [
             'database' => 'cnms_26032023_db',
             'username' => 'root',
             'password' => 'OZYdzx15146',
+            // end
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
