@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
+use Illuminate\Support\Facades\Validator;
+
 class AppointmentController extends Controller
 {
     public function add(Request $request){  
@@ -21,9 +23,12 @@ class AppointmentController extends Controller
             $error = $validator->errors()->all()[0];
             return response()->json(['status' => 'false', 'message' => $error, 'data' => []], 422);
         } else {
-                $date = new Appointment();
-                $data->TRACK  = $request->TRACK;
+                $data = new Appointment();
+                $data->TRACK  = 'YES';
                 $data->PID =  $request->PID;
+                $data->UID  =  auth()->user()->UID;
+                $data->LAT =  $request->LAT;
+                $data->LNG =  $request->LNG;
                 $data->save();
                 return response()->json(['status' => 'true', 'message' => "ເພີ່ມຂໍ້ມູນສໍາເລັດແລ້ວ!", 'data' => $data], 200);
         }

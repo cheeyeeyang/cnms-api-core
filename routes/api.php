@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/forget_password', [App\Http\Controllers\API\Auth\AuthApiController::class, 'forget_password']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/get_dashboard', [App\Http\Controllers\API\OrderApiController::class, 'get_dashboard']);
     Route::post('/logout', [App\Http\Controllers\API\Auth\AuthApiController::class, 'logout']);
     Route::get('/get_profile', [App\Http\Controllers\API\Auth\AuthApiController::class, 'getProfile']);
     Route::post('/reset_forget_password', [App\Http\Controllers\API\Auth\AuthApiController::class, 'reset_forget_password']);
@@ -41,7 +42,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/delete/zone', [App\Http\Controllers\API\ZoneApiController::class, 'delete']);
     //appointment
     Route::get('/appointment', [App\Http\Controllers\API\AppointmentApiController::class, 'get']);
-    Route::post('/appointment', [\App\Http\Controllers\API\AppointmentController::class, 'add']);
+    Route::post('/appointment', [App\Http\Controllers\API\AppointmentApiController::class, 'add']);
     Route::put('/appointment/{id}', [App\Http\Controllers\API\AppointmentApiController::class, 'update']);
     Route::delete('/appointment/{id}', [App\Http\Controllers\API\AppointmentApiController::class, 'delete']);
     //User
@@ -68,6 +69,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/get_plan_by_employee', [App\Http\Controllers\API\PlanApiController::class, 'get_plan_by_employee']);
     Route::get('/get_plan_detail_employee/{id}', [App\Http\Controllers\API\PlanApiController::class, 'get_plan_detail_employee']);
     // preorder
+    Route::get('/get_preorder_total', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_total']);
     Route::post('/pre_order', [App\Http\Controllers\API\OrderApiController::class, 'preorder']);
     Route::get('/get_preorder', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder']);
     Route::get('/get_preorder_detail/{id}', [App\Http\Controllers\API\OrderApiController::class, 'get_preorder_detail']);

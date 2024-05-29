@@ -4,11 +4,15 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Preorder\GetPreorderResource;
+use App\Models\Alert;
+use App\Models\AlertTransaction;
+use App\Models\Appointment;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\Tartget;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,6 +20,27 @@ use Illuminate\Support\Facades\DB;
 
 class OrderApiController extends Controller
 {
+    public function get_dashboard()
+    {
+        $total_percent_order = 0.00;
+        $total_percent_appointment = 0.00;
+        $count_noti = 0;
+        $amount_order =  Order::where('UID', auth()->user()->UID)->sum('AMOUNT');
+        $count_appointment =  Appointment::where('UID', auth()->user()->UID)->count();
+        $data_target = Tartget::where('UID', auth()->user()->UID)->orderBy('TGID', 'desc')->first();
+        $total_data_target = Tartget::where('UID', auth()->user()->UID)->where('AMOUNT','>',0)->orderBy('TGID', 'desc')->first();
+        $count_noti =  Alert::whereNotIn('AID', AlertTransaction::where('UID', auth()->user()->UID)->select('AID')->pluck('AID')->toArray())->count();
+        if ($data_target) {
+            $total_percent_order = ($amount_order / $total_data_target->AMOUNT) * 100;
+            $total_percent_appointment = ($count_appointment / $data_target->TARGET) * $data_target->PERCENTAGE;
+        }
+        $data = [
+            'total_percent_order' => $total_percent_order,
+            'total_percent_appointment' => $total_percent_appointment,
+            'count_noti' => $count_noti
+        ];
+        return response()->json(['data' => $data], 200);
+    }
     public function preorder(Request $request)
     {
         try {
@@ -47,6 +72,7 @@ class OrderApiController extends Controller
                     $order_detail->save();
                 }
             } else {
+                DB::rollBack();
                 return response()->json(["message" => "ບໍ່ມີລາຍການສັ່ງຈອງ",], 401);
             }
             DB::commit();
@@ -106,7 +132,7 @@ class OrderApiController extends Controller
     }
     public function get_preorder()
     {
-        return response()->json(['data' => GetPreorderResource::collection(Order::where('UID', auth()->user()->UID)->orderBy('ORID', 'desc')->get())], 200);
+        return response()->json(['data' => GetPreorderResource::collection(Order::where('UID', auth()->user()->UID)->orderBy('ORID', 'DESC')->get())], 200);
     }
     public function get_preorder_detail($id)
     {
@@ -166,8 +192,8 @@ class OrderApiController extends Controller
         }
     }
     public function history_preorder_employee()
-    {   
-        $data  = Customer::whereIn('CID', Order::pluck('CID'))->get();
+    {
+        $data  = Customer::whereIn('CID', Order::where('UID', auth()->user()->UID)->pluck('CID'))->get();
         $order = [];
         foreach ($data as $item) {
             $customer = Customer::where('CID', $item->CID)->first();
@@ -262,5 +288,26 @@ class OrderApiController extends Controller
             ];
         }
         return response()->json(['data' => $order], 200);
+    }
+    public function get_preorder_total(){
+        $total_target = Tartget::where('UID', auth()->user()->UID)->sum('AMOUNT');
+        $total_balance = Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->sum('AMOUNT');
+        if(auth()->user()->TYPE == 1){
+            $items = Order::whereMonth('created_at', date('m'))->orderBy('ORID','DESC')->get();
+        }else{
+            $items = Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->orderBy('ORID','DESC')->get();
+        }
+        if($total_target <= 0){
+            $total_achived = 0;
+        }else{
+           $total_achived = ($total_balance / $total_target) * 100;
+        }
+        $data = [
+         'total_achived' => $total_achived,
+         'total_target' => $total_target,
+         'total_balance' => $total_balance,
+         'orders' => GetPreorderResource::collection($items)
+        ];
+        return response()->json(['data' => $data], 200);
     }
 }

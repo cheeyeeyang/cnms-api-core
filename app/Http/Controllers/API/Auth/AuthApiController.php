@@ -101,7 +101,7 @@ class AuthApiController extends Controller
     public function getProfile()
     {
         return response([
-            'data' => User::select('users.*', 'e.EMPNAME')->join('employees as e', 'e.EMPID', '=', 'users.EMPID')->where('users.UID', auth()->user()->UID)->first()
+            'data' => User::select('users.UID', 'users.USERNAME', 'users.TYPE', 'users.EMPID', 'e.EMPNAME')->join('employees as e', 'e.EMPID', '=', 'users.EMPID')->where('users.UID', auth()->user()->UID)->first()
         ], 200);
     }
     public function logout()

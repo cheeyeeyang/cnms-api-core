@@ -43,9 +43,9 @@ class PlanApiController extends Controller
                     $data = new Plan();
                     $data->UID = auth()->user()->UID;
                     $data->CID = $cus->CID;
-                    $data->TARGET = $request->target;
+                    $data->TARGET = 1;
                     // $data->AMOUNT = $request->amount;
-                    $data->PERCENTAGE = $request->percent;
+                    // $data->PERCENTAGE = 0.00;
                     $data->LAT = $request->LAT;
                     $data->LNG = $request->LNG;
                     $data->TYPE = $request->type;
@@ -54,9 +54,9 @@ class PlanApiController extends Controller
                     $data = new Plan();
                     $data->UID = auth()->user()->UID;
                     $data->CID = $request->CID;
-                    $data->TARGET = $request->target;
+                    $data->TARGET = 1;
                     // $data->AMOUNT = $request->amount;
-                    $data->PERCENTAGE = $request->percent;
+                    // $data->PERCENTAGE = $request->percent;
                     $data->LAT = $request->LAT;
                     $data->LNG = $request->LNG;
                     $data->save();
