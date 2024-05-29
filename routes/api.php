@@ -41,10 +41,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/update/zone', [App\Http\Controllers\API\ZoneApiController::class, 'update']);
     Route::post('/delete/zone', [App\Http\Controllers\API\ZoneApiController::class, 'delete']);
     //appointment
-    Route::get('/appointment', [App\Http\Controllers\API\AppointmentApiController::class, 'get']);
-    Route::post('/appointment', [App\Http\Controllers\API\AppointmentApiController::class, 'add']);
-    Route::put('/appointment/{id}', [App\Http\Controllers\API\AppointmentApiController::class, 'update']);
-    Route::delete('/appointment/{id}', [App\Http\Controllers\API\AppointmentApiController::class, 'delete']);
+    Route::get('/appointment', [App\Http\Controllers\API\AppointmentController::class, 'get']);
+    Route::post('/appointment', [App\Http\Controllers\API\AppointmentController::class, 'add']);
+    Route::put('/appointment/{id}', [App\Http\Controllers\API\AppointmentController::class, 'update']);
+    Route::delete('/appointment/{id}', [App\Http\Controllers\API\AppointmentController::class, 'delete']);
     //User
     Route::get('/get_user', [App\Http\Controllers\API\Auth\AuthApiController::class, 'get']);
     Route::post('/add_user', [App\Http\Controllers\API\Auth\AuthApiController::class, 'add']);
@@ -95,7 +95,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/confirm_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'confirm_alert_employee']);
     Route::get('/count_alert_employee', [App\Http\Controllers\API\AlertApiController::class, 'count_alert_employee']);
     Route::post('/edit_preorder_detail', [App\Http\Controllers\API\OrderApiController::class, 'edit_preorder_detail']);
-    Route::get('/get_history_plan_by_employee', [App\Http\Controllers\API\PlanApiController::class, 'get_history_plan_by_employee']);
+    Route::post('/get_history_plan_by_employee', [App\Http\Controllers\API\PlanApiController::class, 'get_history_plan_by_employee']);
     Route::post('/get_history_plan_by_employee_by_date', [App\Http\Controllers\API\PlanApiController::class, 'get_history_plan_by_employee_by_date']);
     Route::get('/history_preorder_employee', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_employee']);
     Route::post('/history_preorder_employee_by_month', [App\Http\Controllers\API\OrderApiController::class, 'history_preorder_employee_by_month']);

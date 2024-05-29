@@ -27,12 +27,14 @@ class OrderApiController extends Controller
         $count_noti = 0;
         $amount_order =  Order::where('UID', auth()->user()->UID)->sum('AMOUNT');
         $count_appointment =  Appointment::where('UID', auth()->user()->UID)->count();
-        $data_target = Tartget::where('UID', auth()->user()->UID)->orderBy('TGID', 'desc')->first();
-        $total_data_target = Tartget::where('UID', auth()->user()->UID)->where('AMOUNT','>',0)->orderBy('TGID', 'desc')->first();
+        $data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','<=',0)->orderBy('TGID', 'desc')->first();
+        $total_data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','>',0)->orderBy('TGID', 'desc')->first();
         $count_noti =  Alert::whereNotIn('AID', AlertTransaction::where('UID', auth()->user()->UID)->select('AID')->pluck('AID')->toArray())->count();
-        if ($data_target) {
+        if ($total_data_target) {
             $total_percent_order = ($amount_order / $total_data_target->AMOUNT) * 100;
-            $total_percent_appointment = ($count_appointment / $data_target->TARGET) * $data_target->PERCENTAGE;
+        }
+       if ($data_target) {
+            $total_percent_appointment = ($count_appointment / $data_target->TARGET) * 100;
         }
         $data = [
             'total_percent_order' => $total_percent_order,

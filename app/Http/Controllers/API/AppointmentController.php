@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class AppointmentApiController extends Controller
+class AppointmentController extends Controller
 {
     public function add(Request $request)
     {
@@ -34,10 +34,13 @@ class AppointmentApiController extends Controller
                 $data->LAT =  $request->LAT;
                 $data->LNG =  $request->LNG;
                 $data->UID = auth()->user()->UID;
-                $data->save();
                 $plan = Plan::find($data->PID);
                 $plan->status = 'success';
                 $plan->update();
+                if(($plan->LAT != $request->LAT) || ($plan->LNG != $request->LNG)){
+                    $data->TRACK = 'NO';
+                }
+                $data->save();
                 DB::commit();
                 return response()->json(['status' => 'true', 'message' => "ເພີ່ມຂໍ້ມູນສໍາເລັດແລ້ວ!", 'data' => $data], 200);
             }

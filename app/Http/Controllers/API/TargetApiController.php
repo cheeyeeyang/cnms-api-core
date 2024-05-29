@@ -26,7 +26,7 @@ class TargetApiController extends Controller
     }
     public function get()
     {
-        return response()->json(['data' =>  Tartget::where('UID', auth()->user()->UID)->orderBy('TGID', 'desc')->get()], 200);
+        return response()->json(['data' =>  Tartget::where('UID', auth()->user()->UID)->whereMonth('created_at', date('m'))->orderBy('TGID', 'desc')->get()], 200);
     }
     public function getTarget()
     {

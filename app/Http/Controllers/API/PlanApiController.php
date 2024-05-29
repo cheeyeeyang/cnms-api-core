@@ -9,6 +9,7 @@ use App\Models\Assign;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Plan;
+use App\Models\Tartget;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -85,13 +86,21 @@ class PlanApiController extends Controller
     {
         return response()->json(['data' => GetAllPlanResource::collection(Plan::orderBy('PID', 'DESC')->where('UID', $id)->get())], 200);
     }
-    public function get_history_plan_by_employee()
+    public function get_history_plan_by_employee(Request $request)
     {
         $data  = [];
-        $get_data = Plan::select(DB::raw('DATE(created_at) as date'))
-            ->groupBy('date')->where('UID', auth()->user()->UID)->orderBy('date', 'DESC')->get();
+        if ($request->date) {
+            $get_data = Plan::select(DB::raw('DATE(created_at) as date'))
+                ->groupBy('date')->where('UID', auth()->user()->UID)->whereDate('created_at', date('Y-m-d', strtotime($request->date)))->orderBy('date', 'DESC')->get();
+        } else {
+            $get_data = Plan::select(DB::raw('DATE(created_at) as date'))
+                ->groupBy('date')->where('UID', auth()->user()->UID)->orderBy('date', 'DESC')->get();
+        }
         $count_customer = 0;
         $count_customer_meet = 0;
+        $total_achived = 0;
+        $total_target = 0;
+        $total_appointment = 0;
         foreach ($get_data as $item) {
             $count_customer = Plan::whereDate('created_at', $item->date)->count();
             $count_customer_meet =  Plan::whereDate('created_at', $item->date)->where('STATUS', 'success')->count();
@@ -100,6 +109,7 @@ class PlanApiController extends Controller
             } else {
                 $zone = '';
             }
+            $total_appointment += $count_customer_meet;
             $data[] = [
                 'created_at' => date('Y-m-d', strtotime($item->date)),
                 'qty_customer' => $count_customer,
@@ -109,7 +119,18 @@ class PlanApiController extends Controller
                 'zone' => !empty($zone) ? $zone->zone->ZNAME : ''
             ];
         }
-        return response(['data' => $data], 200);
+        $data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT', '<=', 0)->orderBy('TGID', 'desc')->first();
+        if ($data_target) {
+            $total_target = $data_target->TARGET;
+            $total_achived = ($total_appointment / $data_target->TARGET) * 100;
+        }
+        $all_data = [
+            'total_achived' => $total_achived,
+            'total_target' => $total_target,
+            'total_appointment' => $total_appointment,
+            'items' => $data
+        ];
+        return response(['data' => $all_data], 200);
     }
     public function get_history_plan_by_employee_by_date(Request $request)
     {
@@ -120,8 +141,10 @@ class PlanApiController extends Controller
         foreach ($get_data as $item) {
             $appointment = Appointment::where('PID', $item->PID)->first();
             if ($appointment) {
-                if (($appointment->LAT == $item->LAT) && $appointment->LNG == $item->LNG) {
+                if ($appointment->TRACK == 'YES') {
                     $qty_meet = 1;
+                } else {
+                    $qty_meet = 0;
                 }
             }
             $data[] = [
