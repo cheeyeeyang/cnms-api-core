@@ -48,7 +48,7 @@ return [
             'url' => 'https://node62423-env-8135661.th1.huk-com.la',
             'host' => 'node62423-env-8135661.th1.huk-com.la',
             'port' => '3306',
-            'database' => 'mysql',
+            'database' => 'cnms_26032023_db',
             'username' => 'root',
             'password' => 'KTYlcv44177',
             //  localhost
