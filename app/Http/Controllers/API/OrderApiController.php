@@ -26,7 +26,7 @@ class OrderApiController extends Controller
         $total_percent_appointment = 0.00;
         $count_noti = 0;
         $amount_order =  Order::where('UID', auth()->user()->UID)->sum('AMOUNT');
-        $count_appointment =  Appointment::where('UID', auth()->user()->UID)->count();
+        $count_appointment = Appointment::where('UID', auth()->user()->UID)->count();
         $data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','<=',0)->orderBy('TGID', 'desc')->first();
         $total_data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','>',0)->orderBy('TGID', 'desc')->first();
         $count_noti =  Alert::whereNotIn('AID', AlertTransaction::where('UID', auth()->user()->UID)->select('AID')->pluck('AID')->toArray())->count();
