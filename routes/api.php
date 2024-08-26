@@ -105,5 +105,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/add_target', [App\Http\Controllers\API\TargetApiController::class, 'add']);
     Route::get('/get_target', [App\Http\Controllers\API\TargetApiController::class, 'get']);
     Route::get('/get_cal_target', [App\Http\Controllers\API\TargetApiController::class, 'getTarget']);
+    //admin
+    Route::get('/get_admin_preorder', [App\Http\Controllers\API\OrderApiController::class, 'get_admin_preorder']);
+    Route::get('/get_admin_appointment', [App\Http\Controllers\API\OrderApiController::class, 'get_admin_appointment']);
+    Route::post('/get_admin_appointment_by_month', [App\Http\Controllers\API\OrderApiController::class, 'get_admin_appointment_by_month']);
 });
 //alert

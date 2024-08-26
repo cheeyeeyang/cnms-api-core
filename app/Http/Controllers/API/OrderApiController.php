@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Preorder\AdminPlanByMonthResource;
+use App\Http\Resources\Preorder\AdminPlanResource;
+use App\Http\Resources\Preorder\AdminPreorderResource;
 use App\Http\Resources\Preorder\GetPreorderResource;
 use App\Models\Alert;
 use App\Models\AlertTransaction;
@@ -11,6 +14,7 @@ use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Plan;
 use App\Models\Product;
 use App\Models\Tartget;
 use App\Models\User;
@@ -25,16 +29,30 @@ class OrderApiController extends Controller
         $total_percent_order = 0.00;
         $total_percent_appointment = 0.00;
         $count_noti = 0;
-        $amount_order =  Order::where('UID', auth()->user()->UID)->sum('AMOUNT');
-        $count_appointment = Appointment::where('UID', auth()->user()->UID)->count();
-        $data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','<=',0)->orderBy('TGID', 'desc')->first();
-        $total_data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT','>',0)->orderBy('TGID', 'desc')->first();
-        $count_noti =  Alert::whereNotIn('AID', AlertTransaction::where('UID', auth()->user()->UID)->select('AID')->pluck('AID')->toArray())->count();
-        if ($total_data_target) {
-            $total_percent_order = ($amount_order / $total_data_target->AMOUNT) * 100;
-        }
-       if ($data_target) {
-            $total_percent_appointment = ($count_appointment / $data_target->TARGET) * 100;
+        if (auth()->user()->TYPE == 1) {
+            $amount_order =  Order::whereMonth('created_at', date('m'))->sum('AMOUNT');
+            $count_appointment = Appointment::whereMonth('created_at', date('m'))->count();
+            $total_data_target = Tartget::whereMonth('created_at', date('m'))->sum('AMOUNT');
+            $data_target = Tartget::whereMonth('created_at', date('m'))->where('AMOUNT', '<=', 0)->sum('TARGET');
+            $count_noti =  Alert::whereNotIn('AID', AlertTransaction::select('AID')->pluck('AID')->toArray())->count();
+            if ($total_data_target) {
+                $total_percent_order = ($amount_order / $total_data_target) * 100;
+            }
+            if ($data_target) {
+                $total_percent_appointment = ($count_appointment / $data_target) * 100;
+            }
+        } else {
+            $amount_order =  Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->sum('AMOUNT');
+            $count_appointment = Appointment::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->count();
+            $data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT', '<=', 0)->orderBy('TGID', 'desc')->first();
+            $total_data_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->where('AMOUNT', '>', 0)->orderBy('TGID', 'desc')->first();
+            $count_noti =  Alert::whereNotIn('AID', AlertTransaction::where('UID', auth()->user()->UID)->select('AID')->pluck('AID')->toArray())->count();
+            if ($total_data_target) {
+                $total_percent_order = ($amount_order / $total_data_target->AMOUNT) * 100;
+            }
+            if ($data_target) {
+                $total_percent_appointment = ($count_appointment / $data_target->TARGET) * 100;
+            }
         }
         $data = [
             'total_percent_order' => $total_percent_order,
@@ -291,25 +309,73 @@ class OrderApiController extends Controller
         }
         return response()->json(['data' => $order], 200);
     }
-    public function get_preorder_total(){
-        $total_target = Tartget::where('UID', auth()->user()->UID)->sum('AMOUNT');
+    public function get_preorder_total()
+    {
+        $total_target = Tartget::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->sum('AMOUNT');
         $total_balance = Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->sum('AMOUNT');
-        if(auth()->user()->TYPE == 1){
-            $items = Order::whereMonth('created_at', date('m'))->orderBy('ORID','DESC')->get();
-        }else{
-            $items = Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->orderBy('ORID','DESC')->get();
+        if (auth()->user()->TYPE == 1) {
+            $items = Order::whereMonth('created_at', date('m'))->orderBy('ORID', 'DESC')->get();
+        } else {
+            $items = Order::whereMonth('created_at', date('m'))->where('UID', auth()->user()->UID)->orderBy('ORID', 'DESC')->get();
         }
-        if($total_target <= 0){
+        if ($total_target <= 0) {
             $total_achived = 0;
-        }else{
-           $total_achived = ($total_balance / $total_target) * 100;
+        } else {
+            $total_achived = ($total_balance / $total_target) * 100;
         }
         $data = [
-         'total_achived' => $total_achived,
-         'total_target' => $total_target,
-         'total_balance' => $total_balance,
-         'orders' => GetPreorderResource::collection($items)
+            'total_achived' => $total_achived,
+            'total_target' => $total_target,
+            'total_balance' => $total_balance,
+            'orders' => GetPreorderResource::collection($items)
         ];
         return response()->json(['data' => $data], 200);
+    }
+    public function get_admin_preorder()
+    {
+        $total_target = Tartget::whereMonth('created_at', date('m'))->sum('AMOUNT');
+        $total_balance = Order::whereMonth('created_at', date('m'))->sum('AMOUNT');
+        $items = Employee::whereIn('EMPID', Order::join('users as u', 'u.UID', '=', 'orders.UID')->whereMonth('orders.created_at', date('m'))->select('u.EMPID')->pluck('u.EMPID')->toArray())->orderBy('EMPID', 'ASC')->get();
+        if ($total_target <= 0) {
+            $total_achived = 0;
+        } else {
+            $total_achived = ($total_balance / $total_target) * 100;
+        }
+        $data = [
+            'total_achived' => $total_achived,
+            'total_target' => $total_target,
+            'total_balance' => $total_balance,
+            'orders' => AdminPreorderResource::collection($items)
+        ];
+        return response()->json(['data' => $data], 200);
+    }
+    public function get_admin_appointment()
+    {
+        $total_target = Tartget::whereMonth('created_at', date('m'))->where('AMOUNT', '<=', 0)->sum('TARGET');
+        $total_balance = Appointment::whereMonth('created_at', date('m'))->count();
+        $items = Employee::whereIn('EMPID', Appointment::join('users as u', 'u.UID', '=', 'appointments.UID')->whereMonth('appointments.created_at', date('m'))->select('u.EMPID')->pluck('u.EMPID')->toArray())->orderBy('EMPID', 'ASC')->get();
+        if ($total_target <= 0) {
+            $total_achived = 0;
+        } else {
+            $total_achived = ($total_balance / $total_target) * 100;
+        }
+        $data = [
+            'total_achived' => $total_achived,
+            'total_target' => $total_target,
+            'total_balance' => $total_balance,
+            'plans' => AdminPlanResource::collection($items)
+        ];
+        return response()->json(['data' => $data], 200);
+    }
+    public function get_admin_appointment_by_month(Request $request)
+    {
+        $data = Customer::whereIn('CID', function ($query) use ($request) {
+            $query->select('c.CID')
+                ->from('customers as c')
+                ->join('plans as a', 'c.CID', '=', 'a.CID')
+                ->whereMonth('a.created_at', $request->month)
+                ->where('a.UID', $request->UID);
+        })->get();
+        return response()->json(['data' => AdminPlanByMonthResource::collection($data)], 200);
     }
 }

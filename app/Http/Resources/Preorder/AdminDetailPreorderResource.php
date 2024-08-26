@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Employee;
+namespace App\Http\Resources\Preorder;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Assign;
-use App\Models\Employee;
-use App\Models\Zone;
-class GetEmployeeResource extends JsonResource
+
+class AdminDetailPreorderResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +15,10 @@ class GetEmployeeResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'employee' => Employee::where('EMPID',$this->EMPID)->first(),
-            'zone' => Zone::where('ZID',$this->ZID)->first(),
+            'PDNAME' => $this->product->PDNAME ?? '',
+            'UNIT' => $this->product->unit->name ?? '',
+            'QTY' => $this->QTY,
+            'PRICE' => $this->PRICE,
         ];
     }
 }

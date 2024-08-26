@@ -20,4 +20,8 @@ class OrderDetail extends Model
            'updated_at'
     ];
     protected $primaryKey = 'ODID';
+    public function product()
+    {
+        return $this->belongsTo('App\Models\Product', 'PDID', 'PDID');
+    }
 }
